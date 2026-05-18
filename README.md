@@ -16,8 +16,8 @@ Data
 
 Usage
 - Run the scripts. Examples:
-  python3 Probabilities_rockfall_conditions/proba_pluie.py
-  python3 Probabilities_rockfall_conditions/proba_gel.py
+  python3 Probabilities_rockfall_conditions/proba_rain.py
+  python3 Probabilities_rockfall_conditions/proba_freeze.py
   python3 Probabilities_rockfall_conditions/proba_charge.py
   python3 Probabilities_rockfall_conditions/proba_depth_freeze.py
 
