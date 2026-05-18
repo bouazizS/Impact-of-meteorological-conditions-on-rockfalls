@@ -9,10 +9,16 @@ Requirements
   pip install numpy pandas matplotlib seaborn scipy pillow
 
 Data
+Sources:
+    - Meteorological datasets are available on Zenodo: 
+    - Rockfall catalog: 
+
 - Place meteorological and seismic catalog CSV files in the same paths expected by the scripts. Example paths used in scripts:
   - /Data/1.0_RR1.csv
   - /Data/ev_sismo2.csv
   - See each script for exact expected filenames.
+
+
 
 Usage
 - Run the scripts. Examples:
