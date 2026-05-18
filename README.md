@@ -1,5 +1,6 @@
-# 
-This repository computes probabilities of rockfall conditioned on meteorological variables (precipitation, water charge, freezing and freezing depth). It contains standalone analysis scripts that read local data, compute conditional probabilities, lift, chi-squared tests, confidence interval and aggregation plots, and save results.
+# Impact-of-meteorological-conditions-on-rockfalls
+
+This repository computes probabilities of rockfall conditioned on meteorological variables (precipitation, water charge, freezing and freezing depth). It contains scripts that read local data, compute conditional probabilities, lift, chi-squared tests, confidence interval and aggregation plots, and save results.
 
 Requirements
 - Python 3.8+
@@ -9,8 +10,8 @@ Requirements
 
 Data
 - Place meteorological and seismic catalog CSV files in the same paths expected by the scripts. Example paths used in scripts:
-  - /mnt/SSD1/bouazizs/GradCam/Probabilities/1.0_RR1.csv
-  - /mnt/SSD1/bouazizs/GradCam/Probabilities/ev_sismo2.csv
+  - /Data/1.0_RR1.csv
+  - /Data/ev_sismo2.csv
   - See each script for exact expected filenames.
 
 Usage
