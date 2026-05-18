@@ -354,21 +354,21 @@ def worker(task):
 
 if __name__ == "__main__":
 
-    df_sismo= pd.read_csv("/mnt/SSD1/bouazizs/GradCam/Probabilities/ev_sismo2.csv")
+    df_sismo= pd.read_csv("/Data/ev_sismo2.csv")
     df_sismo['AAAAMMJJHH'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
     #pour avoir les dates sismo en jour
     df_sismo['AAAAMMJJHH']=df_sismo['AAAAMMJJHH'].dt.strftime('%Y-%m-%d')
     df_sismo['AAAAMMJJHH'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
 
 
-    df = pd.read_csv('/mnt/SSD1/bouazizs/GradCam/Probabilities/data_Temp_sabrine_st-H.csv', delimiter=',')
-    df_T = pd.read_csv('/mnt/SSD1/bouazizs/GradCam/Probabilities/1.0_ T_St_Hiliaire_filled_complete.csv', delimiter='\t')
+    df = pd.read_csv('/Data/data_Temp_sabrine_st-H.csv', delimiter=',')
+    df_T = pd.read_csv('/Data/1.0_ T_St_Hiliaire_filled_complete.csv', delimiter='\t')
 
     df['AAAAMMJJHH'] = df_T['AAAAMMJJHH'].values
     df['AAAAMMJJHH'] = pd.to_datetime(df['AAAAMMJJHH']) 
-    
-    
-    pgel = simulate_temperature('/mnt/SSD1/bouazizs/GradCam/Probabilities/data_Temp_sabrine_st-H.csv')
+
+
+    pgel = simulate_temperature('/Data/data_Temp_sabrine_st-H.csv')
     df["pgel"] = pgel  # dans le cas de pgel non !! on prend toutes le heures de la journée et on voit si au moins pgel> 16cm !!
    
     #avoir les dates en journaliers des temp
@@ -384,7 +384,7 @@ if __name__ == "__main__":
     end_date = min(df_sismo['AAAAMMJJHH'].max(), df['AAAAMMJJHH'].max())
     df_sismo = df_sismo[(df_sismo['AAAAMMJJHH'] >= start_date) & (df_sismo['AAAAMMJJHH'] <= end_date)]
 
-    outputFolder="/mnt/SSD1/bouazizs/GradCam/Probabilities_rockfall_conditions/Freeze_depth"
+    outputFolder="/Probabilities_rockfall_conditions/Freeze_depth"
     if not os.path.exists(outputFolder):
         os.makedirs(outputFolder)
 

@@ -157,7 +157,7 @@ def trouver_periodes_HR(df, n, seuil, check_type, condition_continue):
     cdt = lambda x: x > 0
     x = 1
     for i in range(len(df) - n + 1):
-        # check whether we are in a "continuous rain" logic or not
+        # check whether we are in a "continuous rain" condition or not
         if condition_continue(x) == cdt(x):
             # Rain is considered continuous: all values in the window must satisfy the condition
             pluie_continue = df['Pluie'].iloc[i:i+n].all()
@@ -168,7 +168,7 @@ def trouver_periodes_HR(df, n, seuil, check_type, condition_continue):
         # Extract precipitation values over the HR window
         somme_precipitations = df['RR1'].iloc[i:i+n]
 
-        # Case 1: threshold on precipitation (SUP case)
+        # Case 1: threshold on precipitation (sup case)
         if (seuil != None) and (check_type == 'sup') and (pluie_continue):
             # At least one value exceeds or equals the threshold
             if (somme_precipitations >= seuil).any():
@@ -176,7 +176,7 @@ def trouver_periodes_HR(df, n, seuil, check_type, condition_continue):
                 fin = df['AAAAMMJJHH'].iloc[i+n-1]
                 periods.append({'Date Début': debut, 'Date Fin': fin})
 
-        # Case 2: threshold on precipitation (INF case)
+        # Case 2: threshold on precipitation (inf case)
         elif (seuil != None) and (check_type == 'inf') and (pluie_continue):
             # All values must be below the threshold
             if (somme_precipitations < seuil).all():
@@ -357,9 +357,6 @@ if __name__ == "__main__":
                 if cdt_Seuil_R==None:
                     seuil_amp = None
 
-                #if cdt_pluie== None and cdt_Seuil_P== None : # and cdt_Seuil_P== None :
-                    #print('rien à traiter pour ce cas')
-                #else:
                 for i, HR in enumerate(HR_values):
                     for j, HP in enumerate(HP_values):
                         proba_values[i, j], nombres_rockfall_apres_pluie[i,j], nombres_no_rockfall_apres_pluie[i,j] = Probability (HR, precipitation_per_day, df_sismo, HP, cond_precip=cdt_Seuil_P, cond_amp=cdt_Seuil_R, condition_pluie_continue= cdt_pluie , seuil_P=seuil_inten, seuil_R =seuil_amp )
@@ -399,7 +396,7 @@ if __name__ == "__main__":
                     plot_fig_proba(outputFolder, os.path.join(outputFolder,f'nombres_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie {cdt_Seuil_P} {seuil_inten} avec continue = {continued}.txt'), HR_values, HP_values )
 
                 #Compute Khi-deux 
-                # if (cdt_pluie != None) and (cdt_Seuil_R != None):
+
                 output_file_khi = os.path.join(outputFolder, f"Khi-deux-P{cdt_Seuil_P}_RF{cdt_Seuil_R}")
                 rockfall_cond = np.loadtxt(
                     f'{outputFolder}/nombres_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie {cdt_Seuil_P} {seuil_inten} avec continue = yes.txt')

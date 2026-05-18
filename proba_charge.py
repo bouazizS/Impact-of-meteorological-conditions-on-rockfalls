@@ -13,7 +13,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from scipy.stats import chi2_contingency
 from PIL import Image
 from matplotlib.colors import LinearSegmentedColormap
-from utilis import plot_fig_proba , compute_chi2 , calcul_IC, plot_probability_heatmaps_levels, compute_ci_level_matrix , plot_aggregation_heatmaps_levels
+from utilis import  compute_chi2 , calcul_IC, plot_probability_heatmaps_levels, compute_ci_level_matrix , plot_aggregation_heatmaps_levels
 
 
 plt.rcParams.update(
@@ -168,15 +168,15 @@ def worker(task):
 
 
 if __name__ == "__main__":
-    df_sismo= pd.read_csv("/mnt/SSD1/bouazizs/GradCam/Probabilities/ev_sismo2.csv")
+    df_sismo= pd.read_csv("/Data/ev_sismo2.csv")
     df_sismo['AAAAMMJJHH'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
     #pour avoir les dates sismo en jour
     df_sismo['AAAAMMJJHH']=df_sismo['AAAAMMJJHH'].dt.strftime('%Y-%m-%d')
     df_sismo['AAAAMMJJHH'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
 
 
-    df = pd.read_csv('/mnt/SSD1/bouazizs/GradCam/Probabilities/data_meteo_Sabrine2.csv', delimiter=';')
-    df_precip0 = pd.read_csv('/mnt/SSD1/bouazizs/GradCam/Probabilities/1.0_RR1.csv', delimiter='\t')
+    df = pd.read_csv('/Data/data_meteo_Sabrine2.csv', delimiter=';')
+    df_precip0 = pd.read_csv('/Data/1.0_RR1.csv', delimiter='\t')
     df['AAAAMMJJHH'] = df_precip0['AAAAMMJJHH'].values
     df['AAAAMMJJHH'] = pd.to_datetime(df['AAAAMMJJHH'])
 
@@ -198,7 +198,7 @@ if __name__ == "__main__":
     end_date = min(df_sismo['AAAAMMJJHH'].max(), df_precip['AAAAMMJJHH'].max())
     df_sismo = df_sismo[(df_sismo['AAAAMMJJHH'] >= start_date) & (df_sismo['AAAAMMJJHH'] <= end_date)]
 
-    outputFolder="/mnt/SSD1/bouazizs/GradCam/Probabilities_rockfall_conditions/Charge-discharge"
+    outputFolder="/Probabilities_rockfall_conditions/Charge-discharge"
     os.makedirs(outputFolder, exist_ok=True)
 
     #pour seuils :
