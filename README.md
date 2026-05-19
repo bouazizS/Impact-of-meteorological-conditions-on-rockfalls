@@ -25,7 +25,7 @@ Main scripts
   2. **Threshold-based analysis**: evaluates probabilities of rockfall events with amplitudes above or below a seismic threshold, conditioned on low or high intensity rainfall.
 
 
-- [`proba_gel.py`](Probabilities_rockfall_conditions/proba_gel.py): Computes conditional rockfall probabilities with respect to continuous freezing.
+- [`proba_freeze.py`](Probabilities_rockfall_conditions/proba_gel.py): Computes conditional rockfall probabilities with respect to continuous freezing.
 
 
 - [`proba_charge.py`](Probabilities_rockfall_conditions/proba_charge.py): Computes conditional rockfall probabilities using water charge/discharge conditions derived from precipitation accumulation and exponential decay dynamics.
