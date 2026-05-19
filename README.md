@@ -13,7 +13,7 @@ Main scripts
 - [`proba_rain.py`](Probabilities_rockfall_conditions/proba_pluie.py):  Computes conditional rockfall probabilities based on rainfall conditions.  
   The script supports two analysis modes:
   1. **Continuous rainfall analysis**: evaluates rockfall occurrence following periods of continuous rainfall without threshold conditioning.
-      ### Configuration example
+    ###### Configuration example
 
     To run the continuous rainfall analysis only, disable thresholding by setting:
 
