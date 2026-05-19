@@ -6,11 +6,7 @@ from scipy.stats import linregress
 from mpl_toolkits.mplot3d import Axes3D
 import os 
 import time 
-import multiprocessing
 import multiprocessing as mp
-import math
-from matplotlib.colors import LinearSegmentedColormap
-from scipy.stats import chi2_contingency
 from PIL import Image
 from matplotlib.colors import LinearSegmentedColormap
 from utilis import  compute_chi2 , calcul_IC, plot_probability_heatmaps_levels, compute_ci_level_matrix , plot_aggregation_heatmaps_levels
@@ -156,10 +152,6 @@ def worker(task):
   proba_H_R, nbr_H_rockfall, nbr_H_no_rockfall = Probability( df_precip, df_sismo, HP, low_threshold, high_threshold, intensity) 
 
   nbr_periodes_rockfall_HP_apres_Hposs, nbr_periodes_no_rockfall_HP_apres_Hposs , nbr_observables_H_HP = Nbr_rockfall_surHP_LIFT( df_precip, df_sismo, HP)
-
-  #proba_R = nbr_periodes_rockfall_HP / nbr_observables_H_HP if nbr_observables_H_HP > 0 else 0
-  
-  #lift = proba_H_R / proba_R if proba_R > 0 else 0 
 
   print(f"(HP={HP}) terminé")
 

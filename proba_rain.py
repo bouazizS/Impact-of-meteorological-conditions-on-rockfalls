@@ -308,13 +308,14 @@ if __name__ == "__main__":
     cdts_pluie=[lambda x: x > 0]#pour aspect continue de pluie
     cdts_Seuil_P=['sup','inf'] #      #pour forte et faible pluie
     cdts_Seuil_R=['sup', 'inf'] #     #pour forte et faible amplitude
+    
+    seuil_5_P= round(precipitation_per_day['RR1'].quantile(0.95),2)
+    seuil_10_R= round(df_R['A(nm/s)'].quantile(0.90),2 )
 
-    # Uncomment this to treat just the condition of continous rain
+    # Uncomment this to treat "Continuous rainfall analysis"
     # cdts_Seuil_P=[None] 
     # cdts_Seuil_R=[None] 
 
-    seuil_5_P= round(precipitation_per_day['RR1'].quantile(0.95),2)
-    seuil_10_R= round(df_R['A(nm/s)'].quantile(0.90),2 )
 
     # For computing the Khi-2 
     nbr_observables_HR_HP= np.zeros((len(HR_values), len(HP_values)))
