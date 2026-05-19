@@ -1,4 +1,4 @@
-# Impact-of-meteorological-conditions-on-rockfalls
+# Impact of meteorological conditions on rockfalls
 
 This repository computes probabilities of rockfall conditioned on meteorological variables (precipitation, water charge, freezing and freezing depth). It contains scripts that read local data, compute conditional probabilities, lift, chi-squared tests, confidence interval and aggregation plots, and save results.
 
