@@ -37,7 +37,7 @@ Main scripts
 
 Data
 
-  Sources:
+- Sources:
     - Meteorological datasets are available on Zenodo: 
     - Rockfall catalog: 
 
@@ -49,11 +49,12 @@ Data
 
 Usage
 - Run the script you need. Examples:
+```python
   python3 Probabilities_rockfall_conditions/proba_rain.py
   python3 Probabilities_rockfall_conditions/proba_freeze.py
   python3 Probabilities_rockfall_conditions/proba_charge.py
   python3 Probabilities_rockfall_conditions/proba_depth_freeze.py
-
+```
 
 Outputs
 - Scripts create output folders under `Probabilities_rockfall_conditions/` such as:
