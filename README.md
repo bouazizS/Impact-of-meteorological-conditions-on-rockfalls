@@ -58,7 +58,7 @@ Usage
 
 Outputs
 - Scripts create output folders under `Probabilities_rockfall_conditions/` such as:
-  - [cdt_thresholding/](Probabilities_rockfall_conditions/cdt_thresholding) — Results and plots of probabilities using rainfall conditions.
-  - [continuous_freeze/](Probabilities_rockfall_conditions/continuous_freeze) — Results and plots of probabilities using continuous-freeze.
-  - [Charge-discharge/](Probabilities_rockfall_conditions/Charge-discharge) — H / Results and plots of probabilities using charge.
-  - [Freeze_depth/](Probabilities_rockfall_conditions/Freeze_depth) — Results and plots of probabilities using depth-freeze.
+  - [cdt_thresholding/](Probabilities_rockfall_conditions/cdt_thresholding): Results and plots of probabilities using rainfall conditions.
+  - [continuous_freeze/](Probabilities_rockfall_conditions/continuous_freeze): Results and plots of probabilities using continuous-freeze.
+  - [Charge-discharge/](Probabilities_rockfall_conditions/Charge-discharge): H / Results and plots of probabilities using charge.
+  - [Freeze_depth/](Probabilities_rockfall_conditions/Freeze_depth): Results and plots of probabilities using depth-freeze.
