@@ -167,7 +167,7 @@ if __name__ == "__main__":
     df_sismo['AAAAMMJJHH'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
 
 
-    df = pd.read_csv('/Data/data_meteo_Sabrine2.csv', delimiter=';')
+    df = pd.read_csv('/Data/data_meteo.csv', delimiter=';')
     df_precip0 = pd.read_csv('/Data/1.0_RR1.csv', delimiter='\t')
     df['AAAAMMJJHH'] = df_precip0['AAAAMMJJHH'].values
     df['AAAAMMJJHH'] = pd.to_datetime(df['AAAAMMJJHH'])

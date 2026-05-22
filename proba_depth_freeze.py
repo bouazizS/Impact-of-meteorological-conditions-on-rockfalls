@@ -100,7 +100,7 @@ def simulate_temperature(file, Xmax=8, dx=0.08, dt=3600, lamb=1.5, C=800, rho=25
       u_new[-1] = T_right #T=cte en profondeur
 
       # Mise à jour de la solution courante
-      u = u_new;
+      u = u_new
       #stockage
       TempXTime[:,n]=u
 
@@ -361,7 +361,7 @@ if __name__ == "__main__":
     df_sismo['AAAAMMJJHH'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
 
 
-    df = pd.read_csv('/Data/data_Temp_sabrine_st-H.csv', delimiter=',')
+    df = pd.read_csv('/Data/data_Temp_st-H.csv', delimiter=',')
     df_T = pd.read_csv('/Data/1.0_ T_St_Hiliaire_filled_complete.csv', delimiter='\t')
 
     df['AAAAMMJJHH'] = df_T['AAAAMMJJHH'].values
