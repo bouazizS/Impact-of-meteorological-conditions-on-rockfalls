@@ -223,7 +223,7 @@ def plot_aggregation( LIFT, p_values, margin_of_error, HR, HP, outputFolder, fil
     axs[0].invert_yaxis()
     axs[0].set_xlabel('Forecast Horizon (FH)')
     axs[0].set_ylabel('Retrospective Horizon (RH)')
-    axs[0].set_title('$Lift > 1$')
+    axs[0].set_title('Lift $> 1$')
 
     # P-values
     sns.heatmap(p_values_classified, xticklabels=HP, yticklabels=HR,
@@ -232,7 +232,7 @@ def plot_aggregation( LIFT, p_values, margin_of_error, HR, HP, outputFolder, fil
                 linewidths=0.1, linecolor='gray')
     axs[1].invert_yaxis()
     axs[1].set_xlabel('Forecast Horizon (FH)')
-    axs[1].set_title('$P-value < threshold$')
+    axs[1].set_title(f'P-value $< {pval_threshold}$')
 
     # Aggregation
     sns.heatmap(aggregated, xticklabels=HP, yticklabels=HR,
@@ -277,7 +277,7 @@ def plot_aggregation( LIFT, p_values, margin_of_error, HR, HP, outputFolder, fil
     )
     axs[3].invert_yaxis()
     axs[3].set_xlabel('Forecast Horizon (FH)')
-    axs[3].set_title('CI by threshold level')
+    axs[3].set_title('Confidence Interval')
 
     # Colorbars formatting
     for i in [0, 1]:
@@ -300,7 +300,7 @@ def plot_aggregation( LIFT, p_values, margin_of_error, HR, HP, outputFolder, fil
     plt.show()
 
     outpath = os.path.join(outputFolder, filename)
-    fig.savefig(outpath, dpi=300, bbox_inches='tight', pad_inches=0.12)
+    fig.savefig(outpath, dpi=300, bbox_inches='tight', pad_inches=0.1)
     plt.close()
 
 

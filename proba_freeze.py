@@ -249,7 +249,7 @@ def worker(task):
 
 if __name__ == "__main__":
 
-    df_T= pd.read_csv("/Data/1.0_ T_St_Hiliaire.csv", delimiter='\t')
+    df_T= pd.read_csv("/mnt/SSD1/bouazizs/GradCam/Probabilities/1.0_ T_St_Hiliaire_filled_complete.csv", delimiter='\t')
     df_T['AAAAMMJJHH'] = pd.to_datetime(df_T['AAAAMMJJHH'])
     df_T["AAAAMMJJHH"] = df_T["AAAAMMJJHH"].dt.date
     df_T['AAAAMMJJHH'] = pd.to_datetime(df_T['AAAAMMJJHH'])
@@ -259,7 +259,7 @@ if __name__ == "__main__":
     df_Daily_T = daily_T.reset_index(name="negative_temp")
 
 
-    df_sismo= pd.read_csv("/Data/ev_sismo2.csv")
+    df_sismo= pd.read_csv("/mnt/SSD1/bouazizs/GradCam/Probabilities/ev_sismo2.csv")
     df_sismo['AAAAMMJJHH'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
     df_sismo['AAAAMMJJHH']=df_sismo['AAAAMMJJHH'].dt.strftime('%Y-%m-%d')
     #on regarde que les types de "R"
@@ -274,7 +274,7 @@ if __name__ == "__main__":
     df_T = df_T[(df_T['AAAAMMJJHH']>= start_date) & (df_T['AAAAMMJJHH'] <= end_date)]
 
     # File to save results
-    outputFolder="/Probabilities_rockfall_conditions/continuous_freeze"
+    outputFolder="/mnt/SSD1/bouazizs/GradCam/Probabilities_rockfall_conditions/continuous_freeze_filled"
     os.makedirs(outputFolder, exist_ok=True)
 
     #calcul des probabilités pour les valeurs de HR et HP
