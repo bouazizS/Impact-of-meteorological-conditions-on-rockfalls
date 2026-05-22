@@ -21,6 +21,13 @@ Main scripts
     cdts_Seuil_P = [None]
     cdts_Seuil_R = [None]
     ```
+    And create the folder to save the appropriate results: 
+
+    ```python
+    outputFolder = "/Probabilities_rockfall_conditions/continuous_rain"
+    os.makedirs(outputFolder, exist_ok=True)
+    ```
+  
 
   2. **Threshold-based analysis**: evaluates probabilities of rockfall events with amplitudes above or below a seismic threshold, conditioned on low or high intensity rainfall.
 
