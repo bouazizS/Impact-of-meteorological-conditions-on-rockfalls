@@ -13,146 +13,146 @@ from mpl_toolkits.mplot3d import Axes3D
 from utilis import plot_fig_proba , compute_chi2 , calcul_IC, plot_aggregation
 
 
-def trouver_periodes_HR_pluie_pas_pluie(df, n):
+def find_periods_HR_rain_no_rain(df, n):
     periods = []
     for i in range(len(df) - n + 1):
         debut = df['AAAAMMJJHH'].iloc[i]
         fin = df['AAAAMMJJHH'].iloc[i+n-1]
-        periods.append({'Date Début': debut, 'Date Fin': fin})
+        periods.append({'Start_Date': debut, 'Date Fin': fin})
     return pd.DataFrame(periods)
 
 
-def Nbr_rockfall_surHP_apres_HR_possibles(x, precipitation_per_day, df_sismo, y, seuil_R, cond_amp):
-  #slicing à partir des dates disponibles pour le catalogue sismo
-  date_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[0])  # début de sismique
-  date_fin_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[-1])  # fin de sismique
+def Nbr_rockfall_onHF_after_HR_possibles(x, precipitation_per_day, df_sismo, y, seuil_R, cond_amp):
+  # slice using dates available in the seismic catalog
+  date_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[0])  # start of seismic
+  date_fin_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[-1])  # end of seismic
   date_ref = date_obj - pd.Timedelta(days=x)
   date_fin_ref = date_fin_obj - pd.Timedelta(days=y)
 
-  #filtrer les données de précipitations pour la période de référence
+  # filter precipitation data for the reference period
   precipitation_per_day.set_index('AAAAMMJJHH', inplace=True)
   periods_df = precipitation_per_day.loc[date_ref:date_fin_ref]
   periods_df.reset_index(inplace=True)
   precipitation_per_day.reset_index(inplace=True)
-  #trouver les périodes de pluie et pas de pluie
-  periods_2013 = trouver_periodes_HR_pluie_pas_pluie(periods_df, x)
-  periods_2013.set_index('Date Début', inplace=True)
+  # find rainy and non-rainy periods
+  periods = find_periods_HR_rain_no_rain(periods_df, x)
+  periods.set_index('Start_Date', inplace=True)
 
 
   df_sismo['Date'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
   df_sismo.set_index('Date', inplace=True)
 
-  #initialisation
+  # initialization
   rockfall_HR_days_after = []
 
-  # Parcourir les dates de précipitations/ periodes
-  for date in periods_2013.index:
-      # Définir la période (dates et heures) à analyser
+  # Iterate over precipitation dates/ periods
+  for date in periods.index:
+      # Define the period (dates and hours) to analyze
       start_date = date + pd.Timedelta(days=x)
       end_date = date + pd.Timedelta(days=x + y - 1)
 
-      # Filtrer les événements dans la période choisie
+      # Filter events in the chosen period
       df_sismo_filtered = df_sismo.loc[start_date:end_date]
 
-      # Vérifier si on a des événements rockfall (type 'R')
+      # Check for rockfall events (type 'R')
       rockfall_events = df_sismo_filtered[df_sismo_filtered['type'] == 'R']
 
       rockfall_detected = False
 
-      if not rockfall_events.empty:  # Si des rockfalls existent
+      if not rockfall_events.empty:  # If rockfalls exist
           amplitudes_rockfall = rockfall_events['A(nm/s)']
 
-          # Condition 2 : vérifier l'amplitude selon 'cond_amp'
+          # Condition 2: check amplitude according to 'cond_amp'
           if (seuil_R is not None):
               if cond_amp == 'sup':
-                  # Vérifier s'il existe au moins un rockfall avec amplitude supérieure ou égale à seuil_R
+                  # Check if there is at least one rockfall with amplitude greater than or equal to seuil_R
                   rockfall_detected = (amplitudes_rockfall >= seuil_R).any()
 
               elif cond_amp == 'inf':
-                  # Vérifier que tous les rockfalls détectés ont une amplitude inférieure à seuil_R
+                  # Check that all detected rockfalls have an amplitude less than seuil_R
                   rockfall_detected = (amplitudes_rockfall < seuil_R).all()
           else:
-              # Si seuil_R est None, on peut définir rockfall_detected comme True
+              # If seuil_R is None, we can set rockfall_detected to True
               rockfall_detected = True
       else:
           rockfall_detected = False
 
       rockfall_HR_days_after.append(1 if rockfall_detected else 0)
 
-  resultat = periods_2013.copy()
+  resultat = periods.copy()
   resultat['rockfall sur période'] = rockfall_HR_days_after
-  nbr_rockfall_HP = resultat['rockfall sur période'].sum()
+  nbr_rockfall_HF = resultat['rockfall sur période'].sum()
   nbr_jours=len(resultat)
-  nbr_no_rockfall_HP= nbr_jours- nbr_rockfall_HP
+  nbr_no_rockfall_HF= nbr_jours- nbr_rockfall_HF
 
-  return resultat, nbr_rockfall_HP, nbr_no_rockfall_HP, nbr_jours
+  return resultat, nbr_rockfall_HF, nbr_no_rockfall_HF, nbr_jours
 
 
-def Nbr_rockfall_surHP_LIFT(x, precipitation_per_day, df_sismo, y, seuil_R, cond_amp):
-  #slicing à partir des dates disponibles pour le catalogue sismo
-  date_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[0])  # début de sismique
-  date_fin_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[-1])  # fin de sismique
+def Nbr_rockfall_onHF_LIFT(x, precipitation_per_day, df_sismo, y, seuil_R, cond_amp):
+  # Slicing using dates available in the seismic catalog
+  date_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[0])  # start of seismic
+  date_fin_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[-1])  # end of seismic
   date_ref = date_obj - pd.Timedelta(days=x)
   date_fin_ref = date_fin_obj - pd.Timedelta(days=y)
 
-  #filtrer les données de précipitations pour la période de référence
+  # Filter precipitation data for the reference period
   precipitation_per_day.set_index('AAAAMMJJHH', inplace=True)
   periods_df = precipitation_per_day.loc[date_ref:date_fin_ref]
   periods_df.reset_index(inplace=True)
   precipitation_per_day.reset_index(inplace=True)
-  #trouver les périodes de pluie et pas de pluie
-  periods_2013 = trouver_periodes_HR_pluie_pas_pluie(periods_df, x)
-  periods_2013.set_index('Date Début', inplace=True)
+  # Find HR rainy and non-rainy periods
+  periods = find_periods_HR_rain_no_rain(periods_df, x)
+  periods.set_index('Start_Date', inplace=True)
 
 
   df_sismo['Date'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
   df_sismo.set_index('Date', inplace=True)
 
-  #initialisation
+  # Initialization
   rockfall_HR_days_after = []
 
-  # Parcourir les dates de précipitations/ periodes
-  for date in periods_2013.index:
-      # Définir la période (dates et heures) à analyser
+  # Iterate over precipitation dates/ periods
+  for date in periods.index:
+      # Define the period (dates and hours) to analyze
       start_date = date + pd.Timedelta(days=x)
       end_date = date + pd.Timedelta(days=x + y - 1)
 
-      # Filtrer les événements dans la période choisie
+      # Filter events in the chosen period
       df_sismo_filtered = df_sismo.loc[start_date:end_date]
 
-      # Vérifier si on a des événements rockfall (type 'R')
+      # Check for rockfall events (type 'R')
       rockfall_events = df_sismo_filtered[df_sismo_filtered['type'] == 'R']
 
       rockfall_detected = False
 
-      if not rockfall_events.empty:  # Si des rockfalls existent
+      if not rockfall_events.empty:  # If rockfalls exist
           amplitudes_rockfall = rockfall_events['A(nm/s)']
 
-          # Condition 2 : vérifier l'amplitude selon 'cond_amp'
+          # Condition 2: check amplitude according to 'cond_amp'
           if (seuil_R is not None):
               if cond_amp == 'sup':
-                  # Vérifier s'il existe au moins un rockfall avec amplitude supérieure ou égale à seuil_R
+                  # Check if there is at least one rockfall with amplitude greater than or equal to seuil_R
                   rockfall_detected = (amplitudes_rockfall >= seuil_R).any()
 
               elif cond_amp == 'inf':
-                  # Vérifier que tous les rockfalls détectés ont une amplitude inférieure à seuil_R
+                  # Check that all detected rockfalls have an amplitude less than seuil_R
                   rockfall_detected = (amplitudes_rockfall < seuil_R).all()
           else:
-              # Si seuil_R est None, on peut définir rockfall_detected comme True
+              # If seuil_R is None, we can set rockfall_detected to True
               rockfall_detected = True
       else:
           rockfall_detected = False
 
       rockfall_HR_days_after.append(1 if rockfall_detected else 0)
 
-  resultat = periods_2013.copy()
+  resultat = periods.copy()
   resultat['rockfall sur période'] = rockfall_HR_days_after
-  nbr_rockfall_HP = resultat['rockfall sur période'].sum()
+  nbr_rockfall_HF = resultat['rockfall sur période'].sum()
   nbr_jours=len(resultat)
 
-  return nbr_rockfall_HP, nbr_jours
+  return nbr_rockfall_HF, nbr_jours
 
-def trouver_periodes_HR(df, n, seuil, check_type, condition_continue):
+def find_periods_HR(df, n, seuil, check_type, condition_continue):
     periods = []
     cdt = lambda x: x > 0
     x = 1
@@ -174,7 +174,7 @@ def trouver_periodes_HR(df, n, seuil, check_type, condition_continue):
             if (somme_precipitations >= seuil).any():
                 debut = df['AAAAMMJJHH'].iloc[i]
                 fin = df['AAAAMMJJHH'].iloc[i+n-1]
-                periods.append({'Date Début': debut, 'Date Fin': fin})
+                periods.append({'Start_Date': debut, 'Date Fin': fin})
 
         # Case 2: threshold on precipitation (inf case)
         elif (seuil != None) and (check_type == 'inf') and (pluie_continue):
@@ -182,81 +182,81 @@ def trouver_periodes_HR(df, n, seuil, check_type, condition_continue):
             if (somme_precipitations < seuil).all():
                 debut = df['AAAAMMJJHH'].iloc[i]
                 fin = df['AAAAMMJJHH'].iloc[i+n-1]
-                periods.append({'Date Début': debut, 'Date Fin': fin})
+                periods.append({'Start_Date': debut, 'Date Fin': fin})
 
         # Case 3: no precipitation threshold (only rain condition)
         elif (seuil == None) and (pluie_continue):
             debut = df['AAAAMMJJHH'].iloc[i]
             fin = df['AAAAMMJJHH'].iloc[i+n-1]
-            periods.append({'Date Début': debut, 'Date Fin': fin})
+            periods.append({'Start_Date': debut, 'Date Fin': fin})
 
     return pd.DataFrame(periods)
 
 
 def Probability (x, precipitation_per_day, df_sismo, y,  cond_precip, cond_amp, condition_pluie_continue, seuil_P= None, seuil_R =None ):     #periodes HR (pluie ou non selon condition)
-    #ajouter colonne Pluie selon condition pour condition : pluie continue ou non
+    # Add 'Pluie' column based on condition for continuous rain or not
     precipitation_per_day['Pluie'] = precipitation_per_day['RR1'].apply(condition_pluie_continue)
 
-    #slicing à partir des dates disponibles pour le catalogue sismo
-    date_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[0])  # début de sismique
-    date_fin_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[-1])  # fin de sismique
+    # Slicing from available dates for the seismic catalog
+    date_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[0])  # start of seismic
+    date_fin_obj = pd.to_datetime(df_sismo['AAAAMMJJHH'].iloc[-1])  # end of seismic
     date_ref = date_obj - pd.Timedelta(days=x)
     date_fin_ref = date_fin_obj - pd.Timedelta(days=y)
 
-    #filtrer les données de précipitations pour la période de référence
+    # Filter precipitation data for the reference period
     precipitation_per_day.set_index('AAAAMMJJHH', inplace=True)
     periods_df = precipitation_per_day.loc[date_ref:date_fin_ref]
     periods_df.reset_index(inplace=True)
     precipitation_per_day.reset_index(inplace=True)
 
-    #touver les périodes de pluie faibles ou de pluie fortes selon condition
-    periods_2013 = trouver_periodes_HR(periods_df, x,seuil_P, cond_precip, condition_pluie_continue)
-    if periods_2013.empty:
+    # Find low or high rain intensity periods according to condition
+    periods = find_periods_HR(periods_df, x,seuil_P, cond_precip, condition_pluie_continue)
+    if periods.empty:
       return 0, 0, 0
-    periods_2013.set_index('Date Début', inplace=True)
+    periods.set_index('Start_Date', inplace=True)
 
     df_sismo['Date'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
     df_sismo.set_index('Date', inplace=True)
 
-    #initialisation
+    # Initialization
     rockfall_HR_days_after = []
-
-    # Parcourir les dates de précipitations/ periodes
-    for date in periods_2013.index:
-        # Définir la période (dates et heures) à analyser
+    
+    # Loop through precipitation dates/periods
+    for date in periods.index:
+        # Define the period (dates and hours) to analyze
         start_date = date + pd.Timedelta(days=x)
         end_date = date + pd.Timedelta(days=x + y - 1)
 
         df_sismo_filtered = df_sismo.loc[start_date:end_date]
 
-        # Vérifier si on a des événements rockfall
+        # Check if there are rockfall events
         rockfall_events = df_sismo_filtered[df_sismo_filtered['type'] == 'R']
 
         rockfall_detected = False
 
-        if not rockfall_events.empty:  # Si des rockfalls existent
+        if not rockfall_events.empty:  # If rockfalls exist
             amplitudes_rockfall = rockfall_events['A(nm/s)']
 
-            # Condition 2 : l'amplitude
+            # Condition 2 : Amplitude
             if (seuil_R is not None):
                 if cond_amp == 'sup':
-                    # Vérifier s'il existe au moins un rockfall avec amplitude supérieure ou égale à seuil_R
+                    # Check if there is at least one rockfall with amplitude greater than or equal to seuil_R
                     rockfall_detected = (amplitudes_rockfall >= seuil_R).any()
 
                 elif cond_amp == 'inf':
-                    # Vérifier que tous les rockfalls détectés ont une amplitude inférieure à seuil_R
+                    # Check that all detected rockfalls have an amplitude less than seuil_R
                     rockfall_detected = (amplitudes_rockfall < seuil_R).all()
             else:
-                # Si seuil_R est None
+                # If seuil_R is None, we can set rockfall_detected to True
                 rockfall_detected = True
         else:
             rockfall_detected = False
 
         rockfall_HR_days_after.append(1 if rockfall_detected else 0)
 
-    resultat = periods_2013.copy()
+    resultat = periods.copy()
     resultat['rockfall sur période'] = rockfall_HR_days_after
-    proba = resultat['rockfall sur période'].mean()   #(nbr periodes suivie de rockfall / nbr de periodes pluie HP))
+    proba = resultat['rockfall sur période'].mean()   #(nbr of periodes suivie de rockfall / nbr of periodes pluie HF))
 
     nbr= resultat['rockfall sur période'].sum()
     nbr_no=len(resultat)-nbr
@@ -267,60 +267,65 @@ def Probability (x, precipitation_per_day, df_sismo, y,  cond_precip, cond_amp, 
 
 if __name__ == "__main__":
 
-    df = pd.read_csv('/mnt/SSD1/bouazizs/GradCam/Probabilities/1.0_RR1.csv', delimiter='\t')
+    df = pd.read_csv('/Data/1.0_RR1.csv', delimiter='\t')
     df['AAAAMMJJHH'] = pd.to_datetime(df['AAAAMMJJHH'])
     df.set_index('AAAAMMJJHH', inplace=True)
     precipitation_per_day = df.resample('1D').sum()
     precipitation_per_day.reset_index(inplace=True)
     precipitation_per_day['AAAAMMJJHH'] = pd.to_datetime(precipitation_per_day['AAAAMMJJHH'])
 
-    df_sismo= pd.read_csv("/mnt/SSD1/bouazizs/GradCam/Probabilities/ev_sismo2.csv")
+    df_sismo= pd.read_csv("/Data/ev_sismo2.csv")
     df_sismo['AAAAMMJJHH'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
     df_sismo['AAAAMMJJHH']=df_sismo['AAAAMMJJHH'].dt.strftime('%Y-%m-%d')
 
     #----------------------------------------------
-    #on garde que les events par jour
+    # We keep only the events by day
+
+    # Convert 'AAAAMMJJHH' column to datetime
     df_sismo['AAAAMMJJHH'] = pd.to_datetime(df_sismo['AAAAMMJJHH'])
     df_unique = df_sismo.drop_duplicates(subset='AAAAMMJJHH')
-    #filtrer les lignes avec type 'R'
+    # Filter rows with type 'R'
     df_R = df_sismo[df_sismo['type'] == 'R']
-    #supprimer les doublons basés sur la date
+    # Drop duplicates based on the the date
     df_R_unique = df_R.drop_duplicates(subset='AAAAMMJJHH')
-    #le nombre de lignes uniques =nbr de rockfall
-    nombre_R_unique = df_R_unique.shape[0]
+    # number of unique rows = nbr de rockfall
+    number_R_unique = df_R_unique.shape[0]
+
     start_date = max(df_sismo['AAAAMMJJHH'].min(), precipitation_per_day['AAAAMMJJHH'].min())
     end_date = min(df_sismo['AAAAMMJJHH'].max(), precipitation_per_day['AAAAMMJJHH'].max())
-
-    # Filtrer les DataFrames pour ne conserver que les dates communes
+    # Filter DataFrame for conserving only common dates
     df_sismo = df_sismo[(df_sismo['AAAAMMJJHH'] >= start_date) & (df_sismo['AAAAMMJJHH'] <= end_date)]
     # precipitation_per_day = precipitation_per_day[(precipitation_per_day['AAAAMMJJHH']>= start_date) & (precipitation_per_day['AAAAMMJJHH'] <= end_date)]
 
-
+    # Define size of retrospective horizon and forecasting horizon 
     HR_values = range(1, 15)
-    HP_values = range(1, 15)
+    HF_values = range(1, 15)
 
-    outputFolder="/mnt/SSD1/bouazizs/GradCam/Probabilities_rockfall_conditions/cdt_thresholding"
+    outputFolder="/Probabilities_rockfall_conditions/cdt_thresholding"
     if not os.path.exists(outputFolder):
         os.makedirs(outputFolder)
 
 
-    #listes des conditions qu'on a :
-    cdts_pluie=[lambda x: x > 0]#pour aspect continue de pluie
-    cdts_Seuil_P=['sup','inf'] #      #pour forte et faible pluie
-    cdts_Seuil_R=['sup', 'inf'] #     #pour forte et faible amplitude
-    
+    # Lists of conditions:
+    cdts_pluie=[lambda x: x > 0]    # For continiuous aspect of rain
+    cdts_Seuil_P=['sup','inf']      # For heavy and light rain
+    cdts_Seuil_R=['sup', 'inf']     # For strong and weak amplitude
+
     seuil_5_P= round(precipitation_per_day['RR1'].quantile(0.95),2)
     seuil_10_R= round(df_R['A(nm/s)'].quantile(0.90),2 )
 
-    # Uncomment this to treat "Continuous rainfall analysis"
+    # Uncomment this to treat "Continuous rainfall analysis" without thresholding conditions :
+    #----------------------------------------------------------------------
     # cdts_Seuil_P=[None] 
     # cdts_Seuil_R=[None] 
+    # outputFolder="/Probabilities_rockfall_conditions/continuous_rain"
+    # os.makedirs(outputFolder, exist_ok=True)
+    #----------------------------------------------------------------------
 
-
-    # For computing the Khi-2 
-    nbr_observables_HR_HP= np.zeros((len(HR_values), len(HP_values)))
-    nbr_periodes_rockfall_HP= np.zeros((len(HR_values), len(HP_values)))
-    nbr_no_periodes_rockfall_HP= np.zeros((len(HR_values), len(HP_values)))
+    # For computing the Khi-2
+    nbr_observables_HR_HF= np.zeros((len(HR_values), len(HF_values)))
+    nbr_periodes_rockfall_HF= np.zeros((len(HR_values), len(HF_values)))
+    nbr_no_periodes_rockfall_HF= np.zeros((len(HR_values), len(HF_values)))
 
     continued=None
     for cdt_Seuil_R in cdts_Seuil_R:
@@ -329,21 +334,21 @@ if __name__ == "__main__":
         if cdt_Seuil_R==None:
             seuil_amp = None
         for i, HR in enumerate(HR_values):
-            for j, HP in enumerate(HP_values):
-                _, nbr_periodes_rockfall_HP[i,j], nbr_no_periodes_rockfall_HP[i,j] , nbr_observables_HR_HP[i,j] = Nbr_rockfall_surHP_apres_HR_possibles(HR, precipitation_per_day,df_sismo, HP, seuil_R= seuil_amp, cond_amp=cdt_Seuil_R)
+            for j, HF in enumerate(HF_values):
+                _, nbr_periodes_rockfall_HF[i,j], nbr_no_periodes_rockfall_HF[i,j] , nbr_observables_HR_HF[i,j] = Nbr_rockfall_onHF_after_HR_possibles(HR, precipitation_per_day,df_sismo, HF, seuil_R= seuil_amp, cond_amp=cdt_Seuil_R)
 
 
-        np.savetxt(os.path.join(outputFolder,f'nombres_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie possible avec continue = {continued}.txt'), nbr_periodes_rockfall_HP)
-        np.savetxt(os.path.join(outputFolder,f'nombres_no_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie possible avec continue = {continued}.txt'), nbr_no_periodes_rockfall_HP)
+        np.savetxt(os.path.join(outputFolder,f'numbers_rockfall {cdt_Seuil_R} {seuil_amp}_after_rain possible with continuous = {continued}.txt'), nbr_periodes_rockfall_HF)
+        np.savetxt(os.path.join(outputFolder,f'numbers_no_rockfall {cdt_Seuil_R} {seuil_amp}_after_rain possible with continuous = {continued}.txt'), nbr_no_periodes_rockfall_HF)
 
 
-    proba_values = np.zeros((len(HR_values), len(HP_values)))
-    nombres_rockfall_apres_pluie=np.zeros((len(HR_values), len(HP_values)))
-    nombres_no_rockfall_apres_pluie=np.zeros((len(HR_values), len(HP_values)))
-    nbr_observables_HR_HP= np.zeros((len(HR_values), len(HP_values)))
-    nbr_periodes_rockfall_HP= np.zeros((len(HR_values), len(HP_values)))
-    proba_R_HP = np.zeros((len(HR_values), len(HP_values)))
-    LIFT = np.zeros((len(HR_values), len(HP_values)))
+    proba_values = np.zeros((len(HR_values), len(HF_values)))
+    numbers_rockfall_after_rain=np.zeros((len(HR_values), len(HF_values)))
+    numbers_no_rockfall_after_rain=np.zeros((len(HR_values), len(HF_values)))
+    nbr_observables_HR_HF= np.zeros((len(HR_values), len(HF_values)))
+    nbr_periodes_rockfall_HF= np.zeros((len(HR_values), len(HF_values)))
+    proba_R_HF = np.zeros((len(HR_values), len(HF_values)))
+    LIFT = np.zeros((len(HR_values), len(HF_values)))
 
     for cdt_pluie in cdts_pluie:
         print('cdt_pluie=',cdt_pluie)
@@ -359,13 +364,13 @@ if __name__ == "__main__":
                     seuil_amp = None
 
                 for i, HR in enumerate(HR_values):
-                    for j, HP in enumerate(HP_values):
-                        proba_values[i, j], nombres_rockfall_apres_pluie[i,j], nombres_no_rockfall_apres_pluie[i,j] = Probability (HR, precipitation_per_day, df_sismo, HP, cond_precip=cdt_Seuil_P, cond_amp=cdt_Seuil_R, condition_pluie_continue= cdt_pluie , seuil_P=seuil_inten, seuil_R =seuil_amp )
+                    for j, HF in enumerate(HF_values):
+                        proba_values[i, j], numbers_rockfall_after_rain[i,j], numbers_no_rockfall_after_rain[i,j] = Probability (HR, precipitation_per_day, df_sismo, HF, cond_precip=cdt_Seuil_P, cond_amp=cdt_Seuil_R, condition_pluie_continue= cdt_pluie , seuil_P=seuil_inten, seuil_R =seuil_amp )
 
-                        nbr_periodes_rockfall_HP[i,j] , nbr_observables_HR_HP[i,j] = Nbr_rockfall_surHP_LIFT(HR, precipitation_per_day,df_sismo, HP, seuil_R= seuil_amp, cond_amp=cdt_Seuil_R)
+                        nbr_periodes_rockfall_HF[i,j] , nbr_observables_HR_HF[i,j] = Nbr_rockfall_onHF_LIFT(HR, precipitation_per_day,df_sismo, HF, seuil_R= seuil_amp, cond_amp=cdt_Seuil_R)
 
-                        proba_R_HP[i,j]= nbr_periodes_rockfall_HP[i,j]  / nbr_observables_HR_HP[i,j]
-                        LIFT[i,j] = proba_values[i,j]  / proba_R_HP[i,j]
+                        proba_R_HF[i,j]= nbr_periodes_rockfall_HF[i,j]  / nbr_observables_HR_HF[i,j]
+                        LIFT[i,j] = proba_values[i,j]  / proba_R_HF[i,j]
 
                 if cdt_pluie == cdts_pluie[0]:
                     continued= "yes"
@@ -373,58 +378,59 @@ if __name__ == "__main__":
                     continued= "no"
                 
                 # Save Proba values
-                file_proba= f'p(R {cdt_Seuil_R} {seuil_amp}|P{cdt_Seuil_P} {seuil_inten} avec continue = {continued}).txt'
+                file_proba= f'p(R {cdt_Seuil_R} {seuil_amp}|P{cdt_Seuil_P} {seuil_inten} with continuous = {continued}).txt'
                 np.savetxt(os.path.join(outputFolder, file_proba), proba_values)
                 # Save Nbr of rockfalls values
-                np.savetxt(os.path.join(outputFolder,f'nombres_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie {cdt_Seuil_P} {seuil_inten} avec continue = {continued}.txt'), nombres_rockfall_apres_pluie)
-                np.savetxt(os.path.join(outputFolder, f'nombres_no_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie {cdt_Seuil_P} {seuil_inten} avec continue = {continued}.txt'), nombres_no_rockfall_apres_pluie)
+                np.savetxt(os.path.join(outputFolder,f'numbers_rockfall {cdt_Seuil_R} {seuil_amp}_after_rain {cdt_Seuil_P} {seuil_inten} with continuous = {continued}.txt'), numbers_rockfall_after_rain)
+                np.savetxt(os.path.join(outputFolder, f'numbers_no_rockfall {cdt_Seuil_R} {seuil_amp}_after_rain {cdt_Seuil_P} {seuil_inten} with continuous = {continued}.txt'), numbers_no_rockfall_after_rain)
                 # Save lift values and plot
-                file_lift= f'Lift(R {cdt_Seuil_R} {seuil_amp}|P{cdt_Seuil_P} {seuil_inten} avec continue = {continued}).txt'
+                file_lift= f'Lift(R {cdt_Seuil_R} {seuil_amp}|P{cdt_Seuil_P} {seuil_inten} with continuous = {continued}).txt'
                 np.savetxt(os.path.join(outputFolder, file_lift), LIFT)
-                #calcul IC et sauvgarde:
-                margin_of_error= calcul_IC(nombres_rockfall_apres_pluie, nombres_no_rockfall_apres_pluie, HR=14, HP=14 ,alpha=0.05)
+                # Calcul IC et sauvgarde:
+                margin_of_error= calcul_IC(numbers_rockfall_after_rain, numbers_no_rockfall_after_rain, HR=14, HP=14 ,alpha=0.05)
                 output_file_IC_path = os.path.join(outputFolder, f'IC_{file_proba}')
                 np.savetxt(output_file_IC_path, margin_of_error)
 
-                plt.rcParams.update({'axes.labelsize': 14,    # Taille du texte des labels des axes
-                                'axes.titlesize': 14,   # Taille du texte du titre des axes
-                                'xtick.labelsize': 14,  # Taille du texte des labels des ticks X
-                                'ytick.labelsize': 14,  # Taille du texte des labels des ticks Y
-                                'font.size': 13,        # Taille générale du texte
+                plt.rcParams.update({'axes.labelsize': 14,  
+                                'axes.titlesize': 14,   
+                                'xtick.labelsize': 14,  
+                                'ytick.labelsize': 14,  
+                                'font.size': 13,     
                                 'legend.fontsize': 15})
-                plot_fig_proba(outputFolder, os.path.join(outputFolder, file_proba), HR_values, HP_values )
+                
+                plot_fig_proba(outputFolder, os.path.join(outputFolder, file_proba), HR_values, HF_values )
                 if seuil_amp == None and seuil_inten == None:
-                    plot_fig_proba(outputFolder, os.path.join(outputFolder,f'nombres_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie {cdt_Seuil_P} {seuil_inten} avec continue = {continued}.txt'), HR_values, HP_values )
+                    plot_fig_proba(outputFolder, os.path.join(outputFolder,f'numbers_rockfall {cdt_Seuil_R} {seuil_amp}_after_rain {cdt_Seuil_P} {seuil_inten} with continuous = {continued}.txt'), HR_values, HF_values )
 
-                #Compute Khi-deux 
+                # Compute Khi-deux 
 
                 output_file_khi = os.path.join(outputFolder, f"Khi-deux-P{cdt_Seuil_P}_RF{cdt_Seuil_R}")
                 rockfall_cond = np.loadtxt(
-                    f'{outputFolder}/nombres_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie {cdt_Seuil_P} {seuil_inten} avec continue = yes.txt')
+                    f'{outputFolder}/numbers_rockfall {cdt_Seuil_R} {seuil_amp}_after_rain {cdt_Seuil_P} {seuil_inten} with continuous = yes.txt')
 
                 no_rockfall_cond = np.loadtxt(
-                    f'{outputFolder}/nombres_no_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie {cdt_Seuil_P} {seuil_inten} avec continue = yes.txt')
+                    f'{outputFolder}/numbers_no_rockfall {cdt_Seuil_R} {seuil_amp}_after_rain {cdt_Seuil_P} {seuil_inten} with continuous = yes.txt')
 
                 rockfall_total = np.loadtxt(
-                    f'{outputFolder}/nombres_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie possible avec continue = None.txt')
+                    f'{outputFolder}/numbers_rockfall {cdt_Seuil_R} {seuil_amp}_after_rain possible with continuous = None.txt')
 
                 no_rockfall_total = np.loadtxt(
-                    f'{outputFolder}/nombres_no_rockfall {cdt_Seuil_R} {seuil_amp}_apres_pluie possible avec continue = None.txt')
+                    f'{outputFolder}/numbers_no_rockfall {cdt_Seuil_R} {seuil_amp}_after_rain possible with continuous = None.txt')
 
                 rockfall_not_cond = rockfall_total - rockfall_cond
                 no_rockfall_not_cond = no_rockfall_total - no_rockfall_cond    
 
-                p_values, d = compute_chi2(rockfall_cond, no_rockfall_cond, rockfall_not_cond, no_rockfall_not_cond, HR_values, HP_values)
+                p_values, d = compute_chi2(rockfall_cond, no_rockfall_cond, rockfall_not_cond, no_rockfall_not_cond, HR_values, HF_values)
                 np.savetxt(output_file_khi, p_values)
 
 
                 # --------Plot figure of aggregation 
-                #figure size config :
-                plt.rcParams.update({'axes.labelsize': 18,    # Taille du texte des labels des axes
-                            'axes.titlesize': 18,   # Taille du texte du titre des axes
-                            'xtick.labelsize': 18,  # Taille du texte des labels des ticks X
-                            'ytick.labelsize': 18,  # Taille du texte des labels des ticks Y
-                            'font.size': 16,        # Taille générale du texte
+                # Figure size config :
+                plt.rcParams.update({'axes.labelsize': 18,    # Size of text of labels axes
+                            'axes.titlesize': 18,   # Size of axes title text
+                            'xtick.labelsize': 18,  # Size of text of X ticks labels
+                            'ytick.labelsize': 18,  # Size of text of Y ticks labels
+                            'font.size': 16,        # General text size
                             'legend.fontsize': 18})
 
                 plot_aggregation( LIFT=LIFT, p_values=p_values, margin_of_error=margin_of_error, outputFolder=outputFolder,
