@@ -45,7 +45,7 @@ Main scripts
 Data
 
 - Sources:
-    - Meteorological datasets are available on Zenodo: [10.5281/zenodo.19632692](10.5281/zenodo.19632692)
+    - Meteorological datasets are available on Zenodo: [https://doi.org/10.5281/zenodo.19632692](10.5281/zenodo.19632692)
     - Rockfall catalog: 
 
 - Place meteorological and seismic catalog CSV files in the same paths expected by the scripts. Example paths used in scripts:
